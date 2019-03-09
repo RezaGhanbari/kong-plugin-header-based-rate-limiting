@@ -4,7 +4,7 @@ local utils = require "kong.tools.utils"
 local RateLimitModel = require "kong.plugins.header-based-rate-limiting.rate_limit_model"
 
 local function is_null_or_exists(entity_db, entity_id)
-    if not entity_id then
+    if not entity_id or entity_id == "" then
         return true
     end
 

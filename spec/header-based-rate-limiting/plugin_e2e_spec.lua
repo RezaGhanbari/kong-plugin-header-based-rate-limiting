@@ -12,9 +12,12 @@ describe("Plugin: header-based-rate-limiting (access)", function()
     local default_rate_limit = 3
 
     local kong_sdk, send_request, send_admin_request
+    local bp, db, dao
 
     setup(function()
-        helpers.start_kong({ plugins = "key-auth,header-based-rate-limiting" })
+        bp, db, dao = helpers.get_db_utils()
+
+        assert(helpers.start_kong({ plugins = "key-auth,header-based-rate-limiting" }))
 
         kong_sdk = test_helpers.create_kong_client()
         send_request = test_helpers.create_request_sender(helpers.proxy_client())
@@ -26,7 +29,8 @@ describe("Plugin: header-based-rate-limiting (access)", function()
     end)
 
     before_each(function()
-        helpers.db:truncate()
+        assert(db:truncate())
+        dao:truncate_tables()
         redis:flushall()
     end)
 

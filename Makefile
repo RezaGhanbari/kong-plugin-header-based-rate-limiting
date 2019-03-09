@@ -25,7 +25,7 @@ publish: ## Build and publish plugin to luarocks
 	docker-compose run kong bash -c "cd /kong-plugins && chmod +x publish.sh && ./publish.sh"
 
 test: ## Run tests
-	docker-compose run kong bash -c "cd /kong && bin/kong migrations up && bin/busted /kong-plugins/spec"
+	docker-compose run kong bash -c "/wait-for-it.sh kong-database:9042 -t 0 && cd /kong && bin/kong migrations up && bin/busted /kong-plugins/spec"
 	docker-compose down
 
 unit: ## Run unit tests

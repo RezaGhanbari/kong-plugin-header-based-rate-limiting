@@ -8,7 +8,8 @@ services:
       - kong-redis
       - mockbin
     environment:
-      - KONG_DATABASE=postgres
+      - KONG_DATABASE=cassandra
+      - KONG_CASSANDRA_CONTACT_POINTS=kong-database
       - KONG_PG_HOST=kong-database
       - KONG_PG_PORT=5432
       - KONG_PG_DATABASE=kong
@@ -35,14 +36,16 @@ services:
     volumes:
       - .:/kong-plugins
       - ./spec/kong_tests.conf:/kong/spec/kong_tests.conf
-    command: bash -c "/kong/bin/kong migrations up && /kong/bin/kong start -v"
+    command: bash -c "/migrate.sh && /kong/bin/kong migrations up && /kong/bin/kong start -v"
 
   kong-database:
-    image: postgres:9.6
+    image: cassandra:3
     environment:
       - POSTGRES_USER=kong
       - POSTGRES_DB=kong
       - POSTGRES_PASSWORD=kong
+    ports:
+      - 9042:9042
 
   kong-redis:
     image: redis
